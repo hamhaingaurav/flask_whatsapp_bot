@@ -89,41 +89,60 @@ def home():
                 if not message['fromMe']:
                     id  = message['chatId']
 
+                    try:
+                        user_obj = Users.query.filter_by(id_=id)
+                    except Exception as e:
+                        user_obj = Users()
+                        user_obj.id_ = id
+
                     if text_list[0].lower() in ['hi', 'hello', 'hey', 'namaste',]:
-                        return bot.welcome(id, q_data=q_data)
+                        que = q_data['welcome_string']
+                        return bot.welcome(id, que=que)
                     elif text_list[0].lower() == 'chatid':
                         return bot.show_chat_id(id)
                     elif text_list[0].lower()=='yes':
                         que = questions[0].question
                         return bot.ask_question(id, que=que)
                     elif re.search("^(Name)\ [A-Za-z ]+$", text):
-                        # user_obj.username = text.split("Name ")[1]
+                        user_obj.username = text.split("Name ")[1]
                         que = questions[1].question
-                        #Save username
                         return bot.ask_question(id, que=que)
                     elif re.search("^(Restaurant)\ [A-Za-z0-9 ]+$", text):
                         # Save Restaurant Name
+                        user_obj.restaurant_name = text.split("Restaurant ")[1]
                         que = questions[2].question
                         return bot.ask_question(id, que=que)
                     elif re.search("^(Address)\ [A-Za-z0-9,\- ]+$", text):
                         # Save Address
+                        user_obj.address = text.split("Address ")[1]
                         que = questions[3].question
                         return bot.ask_question(id, que=que)
                     elif re.search("^(Age)\ [0-9]+$", text):
                         # Save Age
+                        user_obj.age = int(text.split("Age ")[1])
                         que = questions[4].question
                         return bot.ask_question(id, que=que)
                     elif re.search("^(Contact)\ [0-9]{10}$", text):
                         # Save Contact
+                        user_obj.contact = int(text.split("Contact ")[1])
                         que = questions[5].question
+                        db.session.add(user_obj)
                         return bot.ask_question(id, que=que)
                     elif re.search("^(ToldBy)\ [A-Za-z]+$", text):
-                        que = q_data['congrats_message']
+                        que = price_list
                         return bot.ask_question(id, que=que)
-                    elif re.search("(\d+\ \d+[A-Za-z\ ]{1,}){1,}", text):
-                        return bot.send_order_confirmation(id, q_data=q_data)
+                    elif re.search("(\d+\ \d+\ [A-Za-z\ ]{1,}){1,}", text):
+                        p_id = int(text.split(" ")[0])
+                        q_num = int(text.split(" ")[1].split(" "))
+                        purchases_obj = Purchases(user_id=id, product_id=p_id, quantity=q_num)
+                        db.session.add(purchases_obj)
+                        que = q_data['congrats_message']
+                        return bot.send_order_confirmation(id, que=que)
                 else:
                     return 'NoCommand'
+
+                db.session.commit()
+
 
     elif request.method == 'GET':
 

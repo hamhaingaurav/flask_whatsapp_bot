@@ -21,15 +21,14 @@ class WaBot:
     def show_chat_id(self, chatId):
         return self.send_message(chatId, f"Chat ID : {chatId}")
 
-    def welcome(self, chatId, q_data):
-        welcome_string = q_data['welcome_string']
-        return self.send_message(chatId, welcome_string)
+    def welcome(self, chatId, que):
+        return self.send_message(chatId, que)
 
     def ask_question(self, chatId, que):
         return self.send_message(chatId, que)
 
-    def send_order_confirmation(self, chatId, q_data):
-        return self.send_message(chatId, q_data['congrats_message'])
+    def send_order_confirmation(self, chatId, que):
+        return self.send_message(chatId, que)
 
     # def no_response(self, chatId):
     #     return self.send_message(chatId, "Sorry, We could not understand you, Please try again !")
