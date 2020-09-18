@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+    <style type="text/css">
+        table, th, td{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+    <center><h3>Users</h3></center>
+
+    <table style="width: 100%;">
+        <thead>
+            <th>ChatID</th>
+            <th>Username</th>
+            <th>Restaurant</th>
+            <th>Address</th>
+            <th>Age</th>
+            <th>Contact</th>
+            <th>Last Login</th>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.id_}}</td>
+                <td>{{user.username}}</td>
+                <td>{{user.restaurant_name}}</td>
+                <td>{{user.address}}</td>
+                <td>{{user.age}}</td>
+                <td>{{user.contact}}</td>
+                <td>{{user.last_login}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

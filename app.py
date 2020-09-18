@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import re
@@ -76,7 +76,7 @@ def home():
 
         products_list = Products.query.all()
         price_list = f"Price list\n\n" + " \n".join([f"{product.id_}. {product.name} INR - {product.rate}/{product.unit}" for product in products_list])
-
+        price_list+= "\n\n Please select your order like this-\n\n <option number><space><quantity><space><unit>\n\ne.g.-\n1 30 Kilogram"
         bot = WaBot()
 
         dict_messages = request.json['messages']
@@ -133,7 +133,7 @@ def home():
                         return bot.ask_question(id, que=que)
                     elif re.search("(\d+\ \d+\ [A-Za-z\ ]{1,}){1,}", text):
                         p_id = int(text.split(" ")[0])
-                        q_num = int(text.split(" ")[1].split(" "))
+                        q_num = int(text.split(" ")[1].split(" ")[0])
                         purchases_obj = Purchases(user_id=id, product_id=p_id, quantity=q_num)
                         db.session.add(purchases_obj)
                         que = q_data['congrats_message']
@@ -141,7 +141,7 @@ def home():
                 else:
                     return 'NoCommand'
 
-                db.session.commit()
+                # db.session.commit()
 
 
     elif request.method == 'GET':
@@ -150,6 +150,12 @@ def home():
         response.mimetype = "text/html"
         return response
 
+
+@app.route('/users', methods=['GET'])
+def users():
+    users = Users.query.all()
+    return render_template('users.html', users=users)
+    
 
 if(__name__) == '__main__':
     app.run()
